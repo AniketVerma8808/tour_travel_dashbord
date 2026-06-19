@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { TailSpin } from "react-loader-spinner";
 
 import { getAllInquiriesService, updateInquiryStatusService } from "../../services/inquiry.service";
 

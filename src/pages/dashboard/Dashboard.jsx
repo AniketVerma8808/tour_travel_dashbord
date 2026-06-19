@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import { getDashboardService } from "../../services/dashboard.service";
+
 import StatsCards from "../../components/dashboard/StatsCards";
 import BookingChart from "../../components/dashboard/BookingChart";
+import PackageChart from "../../components/dashboard/PackageChart";
+
 import RecentBookings from "../../components/dashboard/RecentBookings";
-import { TailSpin } from "react-loader-spinner";
+import RecentInquiries from "../../components/dashboard/RecentInquiries";
+import RecentReviews from "../../components/dashboard/RecentReviews";
 
 const Dashboard = () => {
   const [data, setData] = useState(null);
@@ -19,11 +23,12 @@ const Dashboard = () => {
 
       if (res.data?.success) {
         setData(res.data);
-      } else {
-        setError("Failed to load dashboard data");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Server error");
+      setError(
+        err.response?.data?.message ||
+        "Failed to load dashboard"
+      );
     } finally {
       setLoading(false);
     }
@@ -33,33 +38,11 @@ const Dashboard = () => {
     fetchDashboard();
   }, []);
 
-  // LOADER
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-[60vh]">
-        <TailSpin height={40} width={40} color="#c9a227" />
-      </div>
-    );
-  }
-
-  // ERROR STATE
   if (error) {
     return (
       <div className="page">
-        <div className="status status-danger">{error}</div>
-        <button className="btn-primary mt-4" onClick={fetchDashboard}>
-          Retry
-        </button>
-      </div>
-    );
-  }
-
-  // EMPTY SAFE CHECK
-  if (!data) {
-    return (
-      <div className="page">
-        <div className="status status-info">
-          No dashboard data available
+        <div className="status status-danger">
+          {error}
         </div>
       </div>
     );
@@ -68,31 +51,56 @@ const Dashboard = () => {
   return (
     <div className="page space-y-6">
 
-      {/* HEADER */}
-      <div>
-        <h1 className="page-title">Dashboard</h1>
-        <p className="page-subtitle">
-          Overview of your business performance
-        </p>
-      </div>
-
       {/* STATS */}
-      <StatsCards stats={data?.stats || {}} />
+      <StatsCards
+        stats={data?.stats || {}}
+        loading={loading}
+      />
 
-      {/* CHART SECTION */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* CHARTS */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
         <div className="dashboard-card p-5">
-          <h2 className="card-title mb-4">Booking Analytics</h2>
-          <BookingChart stats={data?.stats || {}} />
+          <BookingChart
+            stats={data?.stats || {}}
+            loading={loading}
+          />
+        </div>
+
+        <div className="dashboard-card p-5">
+          <PackageChart
+            stats={data?.stats || {}}
+            loading={loading}
+          />
         </div>
 
       </div>
 
-      {/* RECENT BOOKINGS */}
+      {/* BOOKINGS + INQUIRIES */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+        <div className="dashboard-card p-5">
+          <RecentBookings
+            bookings={data?.recentBookings || []}
+            loading={loading}
+          />
+        </div>
+
+        <div className="dashboard-card p-5">
+          <RecentInquiries
+            inquiries={data?.recentInquiries || []}
+            loading={loading}
+          />
+        </div>
+
+      </div>
+
+      {/* REVIEWS */}
       <div className="dashboard-card p-5">
-        <h2 className="card-title mb-4">Recent Bookings</h2>
-        <RecentBookings bookings={data?.recentBookings || []} />
+        <RecentReviews
+          reviews={data?.recentReviews || []}
+          loading={loading}
+        />
       </div>
 
     </div>

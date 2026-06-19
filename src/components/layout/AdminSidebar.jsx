@@ -8,7 +8,7 @@ import {
   FiLogOut,
 } from "react-icons/fi";
 
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const menu = [
@@ -45,13 +45,17 @@ const menu = [
 ];
 
 const AdminSidebar = ({ open }) => {
+
   const navigate = useNavigate();
+  const location = useLocation();
   const { logout } = useAuth();
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
+
+
   return (
     <aside
       className={`sidebar fixed lg:relative  top-0 left-0 h-screen w-64 transition-all duration-300 z-50
@@ -91,29 +95,35 @@ const AdminSidebar = ({ open }) => {
         {/* Menu */}
 
         <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+          {menu.map((item) => {
+            const isDashboard =
+              item.path === "/" &&
+              (location.pathname === "/" ||
+                location.pathname === "/dashboard");
 
-          {menu.map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.path}
-              end
-              className={({ isActive }) =>
-                `sidebar-link ${isActive ? "active" : ""
-                }`
-              }
-            >
-              <span className="text-xl">
-                {item.icon}
-              </span>
+            return (
+              <NavLink
+                key={item.name}
+                to={item.path}
+                end={item.path === "/"}
+                className={({ isActive }) =>
+                  `sidebar-link ${isActive || isDashboard
+                    ? "active"
+                    : ""
+                  }`
+                }
+              >
+                <span className="text-xl">
+                  {item.icon}
+                </span>
 
-              <span className="font-medium">
-                {item.name}
-              </span>
-            </NavLink>
-          ))}
-
+                <span className="font-medium">
+                  {item.name}
+                </span>
+              </NavLink>
+            );
+          })}
         </nav>
-
         {/* Logout */}
 
         <div className="pt-5 border-t border-gray-700">

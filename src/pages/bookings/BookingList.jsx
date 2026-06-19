@@ -3,7 +3,6 @@ import {
   getAllBookingsService,
   updateBookingStatusService,
 } from "../../services/booking.service";
-import { TailSpin } from "react-loader-spinner";
 
 const BookingList = () => {
   const [bookings, setBookings] = useState([]);
@@ -123,13 +122,48 @@ const BookingList = () => {
 
               {/* LOADING */}
               {loading ? (
-                <tr>
-                  <td colSpan="8" className="p-10 text-center">
-                    <div className="flex justify-center">
-                      <TailSpin height={40} width={40} color="#c9a227" />
-                    </div>
-                  </td>
-                </tr>
+                [...Array(5)].map((_, i) => (
+                  <tr
+                    key={i}
+                    className="border-t border-[var(--color-border)]"
+                  >
+                    <td className="p-4">
+                      <div className="h-4 bg-gray-200 animate-pulse rounded w-24"></div>
+                    </td>
+
+                    <td className="p-4">
+                      <div className="h-4 bg-gray-200 animate-pulse rounded w-28"></div>
+                    </td>
+
+                    <td className="p-4">
+                      <div className="h-4 bg-gray-200 animate-pulse rounded w-24"></div>
+                    </td>
+
+                    <td className="p-4">
+                      <div className="h-4 bg-gray-200 animate-pulse rounded w-40"></div>
+                    </td>
+
+                    <td className="p-4">
+                      <div className="h-4 bg-gray-200 animate-pulse rounded w-32"></div>
+                    </td>
+
+                    <td className="p-4">
+                      <div className="h-4 bg-gray-200 animate-pulse rounded w-24"></div>
+                    </td>
+
+                    <td className="p-4">
+                      <div className="h-5 bg-gray-200 animate-pulse rounded w-20"></div>
+                    </td>
+
+                    <td className="p-4">
+                      <div className="flex gap-2">
+                        <div className="h-8 bg-gray-200 animate-pulse rounded w-16"></div>
+                        <div className="h-8 bg-gray-200 animate-pulse rounded w-20"></div>
+                        <div className="h-8 bg-gray-200 animate-pulse rounded w-20"></div>
+                      </div>
+                    </td>
+                  </tr>
+                ))
               ) : bookings.length === 0 ? (
                 <tr>
                   <td colSpan="8" className="p-6 text-center">
