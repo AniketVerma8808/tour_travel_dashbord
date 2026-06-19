@@ -17,8 +17,7 @@ import Settings from "../pages/settings/Settings";
 const AppRoutes = () => {
   return (
     <Routes>
-
-      {/* Public */}
+      {/* Login */}
       <Route element={<PublicRoute />}>
         <Route path="/login" element={<Login />} />
       </Route>
@@ -26,21 +25,19 @@ const AppRoutes = () => {
       {/* Protected */}
       <Route element={<ProtectedRoute />}>
         <Route element={<AdminLayout />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
 
-          <Route index element={<Dashboard />} />
+          <Route path="/packages" element={<PackageList />} />
+          <Route path="/packages/create" element={<PackageForm />} />
+          <Route path="/packages/edit/:id" element={<PackageForm />} />
 
-          <Route path="packages" element={<PackageList />} />
-          <Route path="packages/create" element={<PackageForm />} />
-          <Route path="packages/edit/:id" element={<PackageForm />} />
-
-          <Route path="bookings" element={<BookingList />} />
-          <Route path="inquiries" element={<InquiryList />} />
-          <Route path="reviews" element={<ReviewList />} />
-          <Route path="settings" element={<Settings />} />
-
+          <Route path="/bookings" element={<BookingList />} />
+          <Route path="/inquiries" element={<InquiryList />} />
+          <Route path="/reviews" element={<ReviewList />} />
+          <Route path="/settings" element={<Settings />} />
         </Route>
       </Route>
-
     </Routes>
   );
 };
