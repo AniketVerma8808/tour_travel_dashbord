@@ -13,6 +13,7 @@ import BookingList from "../pages/bookings/BookingList";
 import InquiryList from "../pages/inquiries/InquiryList";
 import ReviewList from "../pages/reviews/ReviewList";
 import Settings from "../pages/settings/Settings";
+import BannerList from "../pages/banner/BannerList";
 
 const AppRoutes = () => {
   return (
@@ -27,6 +28,8 @@ const AppRoutes = () => {
         <Route element={<AdminLayout />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/dashboard" element={<Dashboard />} />
+
+          <Route path="/banners" element={<BannerList  />} />
 
           <Route path="/packages" element={<PackageList />} />
           <Route path="/packages/create" element={<PackageForm />} />

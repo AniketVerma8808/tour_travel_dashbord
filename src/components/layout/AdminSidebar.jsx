@@ -6,6 +6,7 @@ import {
   FiStar,
   FiSettings,
   FiLogOut,
+  FiImage,
 } from "react-icons/fi";
 
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
@@ -16,6 +17,11 @@ const menu = [
     name: "Dashboard",
     icon: <FiHome size={20} />,
     path: "/",
+  },
+  {
+    name: "Banners",
+    icon: <FiImage size={20} />,
+    path: "/banners",
   },
   {
     name: "Packages",
