@@ -14,9 +14,7 @@ const ReviewList = () => {
     try {
       setError("");
       setLoading(true);
-
       const res = await getAllReviewsService();
-
       if (res.data?.success) {
         setReviews(res.data.reviews || []);
       } else {
@@ -82,7 +80,7 @@ const ReviewList = () => {
         </div>
       )}
 
-      {/* Table */}
+      {/* Table Reviews*/}
       <div className="table-card">
         <div className="p-4 border-b border-[var(--color-border)]">
           <h2 className="table-title">All Reviews</h2>
