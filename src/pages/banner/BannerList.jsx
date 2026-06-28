@@ -7,7 +7,7 @@ import {
 import BannerFormModal from "./BannerFormModal";
 import BannerPreviewModal from "./BannerPreviewModal";
 
-
+import toast from "react-hot-toast";
 
 const BannerList = () => {
     const [banners, setBanners] = useState([]);
@@ -33,7 +33,7 @@ const BannerList = () => {
 
             const data = res?.data?.data || [];
 
-            console.log("images", data);
+            // console.log("images", data);
 
             setBanners(data);
 
@@ -53,21 +53,23 @@ const BannerList = () => {
 
     const handleDelete = async (id) => {
         const confirmDelete = window.confirm(
-            "Delete this banner?"
+            "Are you sure you want to delete this banner?"
         );
 
         if (!confirmDelete) return;
 
         try {
             await deleteBannerService(id);
-
             setBanners((prev) =>
                 prev.filter((item) => item._id !== id)
             );
+            toast.success(
+                res?.data?.message || "Banner deleted successfully."
+            );
         } catch (err) {
-            alert(
-                err.response?.data?.message ||
-                "Delete failed"
+            toast.error(
+                error?.response?.data?.message ||
+                "Failed to delete banner."
             );
         }
     };
@@ -82,25 +84,16 @@ const BannerList = () => {
 
     return (
         <div className="page">
-
-            {/* Header */}
-
             <div className="flex items-center justify-between mb-6">
-
                 <div>
-
                     <h1 className="page-title">
                         Banner Management
                     </h1>
-
                     <p className="page-subtitle">
                         Manage homepage banners
                     </p>
-
                 </div>
-
                 <div className="flex gap-3">
-
                     <button
                         className="btn-primary"
                         onClick={() => {
@@ -110,89 +103,62 @@ const BannerList = () => {
                     >
                         Add Banner
                     </button>
-
                     <button
                         className="btn-outline"
                         onClick={fetchBanners}
                     >
                         Refresh
                     </button>
-
                 </div>
-
             </div>
-
             {error && (
                 <div className="status status-danger mb-5">
                     {error}
                 </div>
             )}
-
-            {/* Table */}
-
             <div className="table-card">
-
                 <div className="p-4 border-b border-[var(--color-border)]">
-
                     <h2 className="table-title">
                         All Banners
                     </h2>
-
                 </div>
-
                 <div className="overflow-x-auto">
-
                     <table className="w-full">
-
                         <thead className="table-header">
-
                             <tr>
-
                                 <th className="p-4 table-heading">
                                     Banner
                                 </th>
-
                                 <th className="p-4 table-heading">
                                     Order
                                 </th>
-
                                 <th className="p-4 table-heading">
                                     Status
                                 </th>
-
                                 <th className="p-4 table-heading">
                                     Action
                                 </th>
-
                             </tr>
-
                         </thead>
-
                         <tbody>
-
                             {loading ? (
                                 [...Array(5)].map((_, i) => (
                                     <tr
                                         key={i}
                                         className="border-t border-[var(--color-border)]"
                                     >
-
                                         <td className="p-4">
                                             <div className="w-40 h-20 rounded-lg bg-gray-200 animate-pulse" />
                                         </td>
-
                                         <td className="p-4">
                                             <div className="h-4 w-10 rounded bg-gray-200 animate-pulse" />
                                         </td>
-
                                         <td className="p-4">
                                             <div className="h-5 w-20 rounded bg-gray-200 animate-pulse" />
                                         </td>
-
                                         <td className="p-4">
                                             <div className="h-8 w-28 rounded bg-gray-200 animate-pulse" />
                                         </td>
-
                                     </tr>
                                 ))
                             ) : banners.length === 0 ? (
@@ -212,8 +178,8 @@ const BannerList = () => {
                                         key={item._id}
                                         className="table-row border-t border-[var(--color-border)]"
                                     >
-
                                         <td className="p-4">
+                                            {console.log(item.image)}
 
                                             <img
                                                 src={item.image}
@@ -225,13 +191,10 @@ const BannerList = () => {
                                             />
 
                                         </td>
-
                                         <td className="p-4">
                                             {item.order}
                                         </td>
-
                                         <td className="p-4">
-
                                             <span
                                                 className={
                                                     item.isActive
@@ -243,13 +206,9 @@ const BannerList = () => {
                                                     ? "Active"
                                                     : "Inactive"}
                                             </span>
-
                                         </td>
-
                                         <td className="p-4">
-
                                             <div className="flex gap-2">
-
                                                 <button
                                                     className="btn-outline text-sm"
                                                     onClick={() =>
@@ -258,7 +217,6 @@ const BannerList = () => {
                                                 >
                                                     View
                                                 </button>
-
                                                 <button
                                                     className="btn-danger text-sm"
                                                     onClick={() =>
@@ -267,23 +225,15 @@ const BannerList = () => {
                                                 >
                                                     Delete
                                                 </button>
-
                                             </div>
-
                                         </td>
-
                                     </tr>
                                 ))
                             )}
-
                         </tbody>
-
                     </table>
-
                 </div>
-
             </div>
-
             <BannerFormModal
                 open={openForm}
                 onClose={() => {
@@ -306,7 +256,6 @@ const BannerList = () => {
                 banner={selectedBanner}
                 onClose={() => setSelectedBanner(null)}
             />
-
         </div>
     );
 };

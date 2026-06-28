@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { createBannerService } from "../../services/banner.service";
+import toast from "react-hot-toast";
 
 const BannerFormModal = ({
   open,
@@ -42,7 +43,8 @@ const BannerFormModal = ({
     e.preventDefault();
 
     if (!form.image) {
-      return alert("Please select a banner image.");
+      toast.error("Please select a banner image.");
+      return;
     }
 
     try {
@@ -57,13 +59,17 @@ const BannerFormModal = ({
       const res = await createBannerService(formData);
 
       if (res.data.success) {
+        toast.success(
+          res.data.message || "Banner created successfully."
+        );
+
         resetForm();
         onSuccess();
       }
     } catch (err) {
-      alert(
+      toast.error(
         err.response?.data?.message ||
-          "Failed to create banner."
+        "Failed to create banner."
       );
     } finally {
       setLoading(false);
