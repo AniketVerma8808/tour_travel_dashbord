@@ -51,28 +51,32 @@ const BannerList = () => {
         fetchBanners();
     }, []);
 
-    const handleDelete = async (id) => {
-        const confirmDelete = window.confirm(
-            "Are you sure you want to delete this banner?"
-        );
+const handleDelete = async (id) => {
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this banner?"
+  );
 
-        if (!confirmDelete) return;
+  if (!confirmDelete) return;
 
-        try {
-            await deleteBannerService(id);
-            setBanners((prev) =>
-                prev.filter((item) => item._id !== id)
-            );
-            toast.success(
-                res?.data?.message || "Banner deleted successfully."
-            );
-        } catch (err) {
-            toast.error(
-                error?.response?.data?.message ||
-                "Failed to delete banner."
-            );
-        }
-    };
+  try {
+    const res = await deleteBannerService(id);
+console.log(res);
+    setBanners((prev) =>
+      prev.filter((item) => item._id !== id)
+    );
+
+    toast.success(
+      res?.data?.message || "Banner deleted successfully."
+    );
+  } catch (error) {
+    toast.error(
+      error?.response?.data?.message ||
+      "Failed to delete banner."
+    );
+
+    console.error(error);
+  }
+};
 
     const resetForm = () => {
         setForm({
