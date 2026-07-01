@@ -10,12 +10,18 @@ export const getPackageByIdService = (id) =>
 
 /* Create package */
 export const createPackageService = (data) =>
-  apiAdmin.post("/packages/create", data);
-
+  apiAdmin.post("/packages/create", data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 /* Update package */
 export const updatePackageService = (id, data) =>
-  apiAdmin.put(`/packages/${id}`, data);
-
+  apiAdmin.put(`/packages/${id}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 /* Update package status */
 export const updatePackageStatusService = (id, status) =>
   apiAdmin.patch(`/packages/${id}/status`, { status });

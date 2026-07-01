@@ -3,13 +3,19 @@ import { TailSpin } from "react-loader-spinner";
 import {
   getAllPackagesService,
   updatePackageStatusService,
+  deletePackageService
 } from "../../services/package.service";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import PackageViewModal from "../../components/package/PackageViewModal";
+
 
 const PackageList = () => {
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedPackage, setSelectedPackage] = useState(null);
+  const [openView, setOpenView] = useState(false);
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -28,7 +34,7 @@ const PackageList = () => {
         page: currentPage,
         limit: currentLimit,
       });
-
+      console.log("res", res)
       if (res.data?.success) {
         setPackages(res.data.packages || []);
         setTotalPages(res.data.totalPages || 1);
@@ -71,6 +77,33 @@ const PackageList = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this package?"
+    );
+    if (!confirmDelete) return;
+    try {
+      setUpdatingId(id);
+
+      const res = await deletePackageService(id);
+
+      if (res.data.success) {
+        setPackages((prev) =>
+          prev.filter((p) => p._id !== id)
+        );
+      } else {
+        toast(res.data.message);
+      }
+    } catch (err) {
+      toast(
+        err.response?.data?.message ||
+        "Failed to delete package"
+      );
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   return (
     <div className="page">
 
@@ -106,125 +139,180 @@ const PackageList = () => {
         <div className="overflow-x-auto">
 
           <table className="w-full text-left">
-
             <thead className="table-header">
               <tr>
+                <th className="p-4">Image</th>
                 <th className="p-4">Package</th>
-                <th className="p-4">Category</th>
+                <th className="p-4">Route</th>
                 <th className="p-4">Price</th>
                 <th className="p-4">Status</th>
                 <th className="p-4">Actions</th>
               </tr>
             </thead>
-
             <tbody>
-
               {loading ? (
                 [...Array(5)].map((_, i) => (
-                  <tr
-                    key={i}
-                    className="border-t border-[var(--color-border)]"
-                  >
-                    <td className="p-4">
-                      <div className="h-4 bg-gray-200 animate-pulse rounded w-40"></div>
-                    </td>
-
-                    <td className="p-4">
-                      <div className="h-4 bg-gray-200 animate-pulse rounded w-28"></div>
-                    </td>
-
-                    <td className="p-4">
-                      <div className="h-4 bg-gray-200 animate-pulse rounded w-20"></div>
-                    </td>
-
-                    <td className="p-4">
-                      <div className="h-5 bg-gray-200 animate-pulse rounded w-20"></div>
-                    </td>
-
-                    <td className="p-4">
-                      <div className="flex gap-2">
-                        <div className="h-8 bg-gray-200 animate-pulse rounded w-16"></div>
-                        <div className="h-8 bg-gray-200 animate-pulse rounded w-24"></div>
-                      </div>
-                    </td>
+                  <tr key={i} className="border-t border-[var(--color-border)]">
+                    {[...Array(11)].map((_, j) => (
+                      <td key={j} className="p-4">
+                        <div className="h-4 bg-gray-200 animate-pulse rounded"></div>
+                      </td>
+                    ))}
                   </tr>
                 ))
               ) : packages.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="p-6 text-center">
-                    No packages found
+                  <td colSpan="11" className="p-8 text-center text-gray-500">
+                    No packages found.
                   </td>
                 </tr>
               ) : (
                 packages.map((p) => (
-                  <tr key={p._id} className="border-t">
+                  <tr
+                    key={p._id}
+                    className="border-t border-[var(--color-border)] hover:bg-gray-50"
+                  >
+                    {/* IMAGE */}
+                    <td className="p-4">
+                      {p.image ? (
+                        <img
+                          src={`${import.meta.env.VITE_IMAGE_URL}/${p.image}`}
+                          alt={p.title}
+                          className="w-20 h-14 rounded-lg object-cover border"
+                        />
+                      ) : (
+                        <div className="w-20 h-14 rounded-lg border bg-gray-100 flex items-center justify-center text-xs text-gray-400">
+                          No Image
+                        </div>
+                      )}
+                    </td>
+                    <td className="p-4 min-w-[240px]">
+                      <div className="font-semibold">
+                        {p.title}
+                      </div>
 
-                    <td className="p-4 font-medium">
-                      {p.title}
+                      <div className="text-xs text-gray-500 mt-1">
+                        {p.category?.replace("-", " ")}
+                      </div>
                     </td>
 
                     <td className="p-4">
-                      {p.category}
-                    </td>
+                      <div className="text-sm font-medium">
+                        {p.startingLocation}
+                      </div>
 
-                    <td className="p-4 font-semibold text-[var(--color-primary)]">
-                      ₹{p.price}
+                      {p.destinationLocation && (
+                        <div className="text-xs text-gray-500">
+                          →
+                          {p.destinationLocation}
+                        </div>
+                      )}
                     </td>
-
                     <td className="p-4">
-                      <span className={
-                        p.status === "active"
-                          ? "status status-success"
-                          : "status status-danger"
-                      }>
+                      {p.oldPrice && (
+                        <div className="text-xs text-gray-400 line-through">
+                          ₹{p.oldPrice}
+                        </div>
+                      )}
+
+                      <div className="font-semibold text-[var(--color-primary)]">
+                        ₹{p.price}
+                      </div>
+                    </td>
+
+                    {/* STATUS */}
+                    <td className="p-4">
+                      <span
+                        className={
+                          p.status === "active"
+                            ? "status status-success"
+                            : "status status-danger"
+                        }
+                      >
                         {p.status}
                       </span>
                     </td>
 
-                    <td className="p-4 flex gap-2 flex-wrap">
-
+                    <td className="p-4">
                       <button
-                        onClick={() =>
-                          navigate(`/packages/edit/${p._id}`)
-                        }
-                        className="btn-outline text-sm"
+                        onClick={() => {
+                          setSelectedPackage(p);
+                          setOpenView(true);
+                        }}
+                        className="btn-outline"
                       >
-                        Edit
+                        View
                       </button>
-
-                      {p.status === "active" ? (
-                        <button
-                          disabled={updatingId === p._id}
-                          onClick={() =>
-                            handleStatus(p._id, "inactive")
-                          }
-                          className="btn-danger text-sm disabled:opacity-60"
-                        >
-                          {updatingId === p._id ? "..." : "Deactivate"}
-                        </button>
-                      ) : (
-                        <button
-                          disabled={updatingId === p._id}
-                          onClick={() =>
-                            handleStatus(p._id, "active")
-                          }
-                          className="btn-primary text-sm disabled:opacity-60"
-                        >
-                          {updatingId === p._id ? "..." : "Activate"}
-                        </button>
-                      )}
-
                     </td>
 
+                    {/* ACTIONS */}
+                    <td className="p-4">
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          onClick={() =>
+                            navigate(`/packages/edit/${p._id}`)
+                          }
+                          className="btn-outline text-sm"
+                        >
+                          Edit
+                        </button>
+
+                        {p.status === "active" ? (
+                          <button
+                            disabled={updatingId === p._id}
+                            onClick={() =>
+                              handleStatus(p._id, "inactive")
+                            }
+                            className="btn-danger text-sm"
+                          >
+                            {updatingId === p._id
+                              ? "Loading..."
+                              : "Deactivate"}
+                          </button>
+                        ) : (
+                          <button
+                            disabled={updatingId === p._id}
+                            onClick={() =>
+                              handleStatus(p._id, "active")
+                            }
+                            className="btn-primary text-sm"
+                          >
+                            {updatingId === p._id
+                              ? "Loading..."
+                              : "Activate"}
+                          </button>
+                        )}
+
+                        <button
+                          disabled={
+                            updatingId === p._id ||
+                            p.status === "active"
+                          }
+                          onClick={() =>
+                            handleDelete(p._id)
+                          }
+                          className="btn-danger text-sm"
+                        >
+                          {updatingId === p._id
+                            ? "Loading..."
+                            : "Delete"}
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))
               )}
-
             </tbody>
 
           </table>
 
         </div>
+
+        <PackageViewModal
+          open={openView}
+          onClose={() => setOpenView(false)}
+          data={selectedPackage}
+        />
 
         {/* ================= PAGINATION (GOOGLE STYLE) ================= */}
         <div className="flex items-center justify-between px-4 py-4 border-t border-[var(--color-border)]">
@@ -253,8 +341,8 @@ const PackageList = () => {
                   key={p}
                   onClick={() => goToPage(p)}
                   className={`px-3 py-1 text-sm rounded-md border ${page === p
-                      ? "bg-[var(--color-primary)] text-white"
-                      : ""
+                    ? "bg-[var(--color-primary)] text-white"
+                    : ""
                     }`}
                 >
                   {p}
