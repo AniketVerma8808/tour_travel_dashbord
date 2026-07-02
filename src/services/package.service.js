@@ -15,6 +15,7 @@ export const createPackageService = (data) =>
       "Content-Type": "multipart/form-data",
     },
   });
+  
 /* Update package */
 export const updatePackageService = (id, data) =>
   apiAdmin.put(`/packages/${id}`, data, {
@@ -22,6 +23,7 @@ export const updatePackageService = (id, data) =>
       "Content-Type": "multipart/form-data",
     },
   });
+
 /* Update package status */
 export const updatePackageStatusService = (id, status) =>
   apiAdmin.patch(`/packages/${id}/status`, { status });

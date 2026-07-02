@@ -176,7 +176,7 @@ const PackageList = () => {
                     <td className="p-4">
                       {p.image ? (
                         <img
-                          src={`${import.meta.env.VITE_IMAGE_URL}/${p.image}`}
+                          src={p.image}
                           alt={p.title}
                           className="w-20 h-14 rounded-lg object-cover border"
                         />

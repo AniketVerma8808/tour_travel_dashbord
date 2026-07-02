@@ -12,6 +12,7 @@ import { TailSpin } from "react-loader-spinner";
 
 const PackageForm = () => {
   const { id } = useParams();
+  console.log("Package ID =>", id);
   const navigate = useNavigate();
 
   const isEdit = Boolean(id);
@@ -48,9 +49,8 @@ const PackageForm = () => {
 
       shortDescription: "",
       description: "",
-
-      inclusions: "",
-      exclusions: "",
+      inclusions: [""],
+      exclusions: [""],
 
       displayOrder: 0,
 
@@ -105,7 +105,7 @@ const PackageForm = () => {
       setError("");
 
       const res = await getPackageByIdService(id);
-
+      console.log("API Response:", res.data);
       if (res.data.success) {
         const pkg = res.data.package;
         reset({
@@ -115,9 +115,7 @@ const PackageForm = () => {
           exclusions: pkg.exclusions?.length ? pkg.exclusions : [""],
         });
         if (pkg.image) {
-          setPreview(
-            `${import.meta.env.VITE_IMAGE_URL}/${pkg.image}`
-          );
+          setPreview(pkg.image);
         } else {
           setError("Package not found")
         }
